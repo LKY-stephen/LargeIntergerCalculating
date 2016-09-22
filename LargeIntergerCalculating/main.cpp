@@ -40,36 +40,36 @@ void main() {
 	case '+':
 		if (number1.signal == number2.signal)
 		{
-			number1.add(number2);
+			cout << number1.add(number2) << endl;
 		}
 		else if(number1.signal==false)
 		{
-			number2.sub(number1);
+			cout << number2.sub(number1)<<endl;
 		}
 		else
 		{
-			number1.sub(number2);
+			cout << number1.sub(number2) << endl;
 		}
 		break;
 	case '-':
-		if (number1.signal != number2.signal)
+		if (number1.signal != number2.signal) 
 		{
-			number1.add(number2);
+			cout << number1.add(number2) << endl;
 		}
 		else if (number1.signal == false)
 		{
-			number2.sub(number1);
+			cout << number2.sub(number1) << endl;
 		}
 		else
 		{
-			number1.sub(number2);
+			cout << number1.sub(number2) << endl;
 		}
 		break;
 	case '*':
-		number1.time(number2);
+		cout << number1.time(number2) << endl;
 		break;
 	case '/':
-		number1.divide(number2);
+		cout << number1.divide(number2) << endl;
 		break;
 	default:
 		cout << "error" << endl;
