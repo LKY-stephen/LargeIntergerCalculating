@@ -62,7 +62,7 @@ string Interger::add(Interger number2)
 	else
 	{   //carry bit
 		if (iterator1 >= 0)
-		{
+		{//number1 has left
 			int i;
 			for (i = iterator1; i >= 0; i--)
 			{
@@ -70,11 +70,8 @@ string Interger::add(Interger number2)
 				{
 					number[i]++;
 					break;//break for
-				}//endif
-			}
-			for (int j = i+1; j <= iterator1; j++)
-			{
-				number[j] = '0';
+				}
+				number[i] = '0';
 			}
 			if (i >= 0)
 			{
@@ -95,11 +92,8 @@ string Interger::add(Interger number2)
 				{
 					number2.number[i]++;
 					break;//break for
-				}//endif
-			}
-			for (int j = i + 1; j <= iterator2; j++)
-			{
-				number2.number[j] = '0';
+				}
+				number[i] = '0';
 			}
 			if (i >= 0)
 			{
@@ -128,7 +122,107 @@ string Interger::add(Interger number2)
 
 string Interger::sub(Interger number2)
 {
-	return string();
+	bool answersignal;
+	string answer = "";
+	char temp = '0';
+	int iterator1;
+	int iterator2;
+
+	//decide the sgn
+	if (length > number2.length)
+	{
+		answersignal = true;
+	}
+	else if (length < number2.length)
+	{
+		answersignal = false;
+	}
+	else
+	{
+		int i=0;
+		for (i = 0; number[i] == number2.number[i]&&i<length; i++);
+		if (i == length)
+		{
+			return "0";
+		}
+		else
+		{
+			answersignal = number[i] > number2.number[i] ? true : false;
+		}
+	}
+	if (answersignal)
+	{
+		iterator2 = number2.length-1;
+		iterator1 = length-1;
+		while (iterator2 >= 0)
+		{
+			if (number[iterator1] < number2.number[iterator2])
+			{
+				for (int j = iterator1-1; j >= 0; j--)
+				{
+					if (number[j] > '0')
+					{
+						number[j]--;
+						break;//break for
+					}
+					number[j] = '9';
+				}
+				temp= (number[iterator1] - number2.number[iterator2] + 10)+'0';
+			}//endif
+			else
+			{
+				temp= (number[iterator1] -number2.number[iterator2])+'0';
+			}
+			answer = temp + answer;
+			iterator1--;
+			iterator2--;
+		}//endwhile
+		if (iterator1 >= 0)
+		{
+			answer = number.substr(0, iterator1 + 1) + answer;
+		}
+	}//end answersignal==true
+	else
+	{
+		iterator1 = number2.length - 1;
+		iterator2 = length - 1;
+		while (iterator2 >= 0)
+		{
+			if (number2.number[iterator1] < number[iterator2])
+			{
+				for (int j = iterator1-1; j >= 0; j--)
+				{
+					if (number2.number[j] > '0')
+					{
+						number2.number[j]--;
+						break;//break for
+					}
+					number2.number[j] = '9';
+				}
+				temp = (number2.number[iterator1] - number[iterator2] + 10 )+ '0';
+			}//endif
+			else
+			{
+				temp = (number2.number[iterator1] - number[iterator2] )+ '0';
+			}
+			answer = temp + answer;
+			iterator1--;
+			iterator2--;
+		}//endwhile
+		if (iterator2 >= 0)
+		{
+			answer = number2.number.substr(0, iterator1 + 1) + answer;
+		}
+	}
+	for (int i = 0; i < answer.size(); i++)
+	{
+		if (answer[i] != '0')
+		{
+			answer = answer.substr(i, answer.size() - i);
+			break;
+		}
+	}
+	return (answersignal?"":"-")+answer;
 }
 
 string Interger::time(Interger number2)
