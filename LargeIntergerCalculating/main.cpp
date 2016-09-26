@@ -2,6 +2,9 @@
 #include "largeinterger.h"
 #include <iostream>
 
+#define jump_op while (getchar() != '\n');
+
+
 using namespace std;
 
 void main() {
@@ -24,17 +27,29 @@ void main() {
 			//input first integer
 			if (number1.number == "")  //if the number is available
 			{
-				cin >> temp2;
-				cin >> temp;
+				cout << "error" << endl;
+				jump_op
+				jump_op
+				cout << "new input:" << endl;
 				continue;
 			}
 
 			//input the second number
-			temp =0x0;
+			temp = getchar();
+			if ((temp > '9'&&temp < '0') && temp != '+' && temp != '-')
+			{
+				cout << "error" << endl;
+				jump_op
+				jump_op
+				cout << "new input:" << endl;
+				continue;
+			}
 			number2 = Interger(temp);
 			if (number2.number == "")//if the number is available
 			{
-				cin >> temp;
+				cout << "error" << endl;
+				jump_op
+				cout << "new input:" << endl;
 				continue;
 			}
 
@@ -52,45 +67,65 @@ void main() {
 				if (number1.signal == number2.signal)
 				{
 					cout << number1.add(number2) << endl;
+					cout << "new input:" << endl;
 				}
 				else if (number1.signal == false)
 				{
 					cout << number2.sub(number1) << endl;
+					cout << "new input:" << endl;
 				}
 				else
 				{
 					cout << number1.sub(number2) << endl;
+					cout << "new input:" << endl;
 				}
 				break;
 			case '-':
 				if (number1.signal != number2.signal)
 				{
 					cout << number1.add(number2) << endl;
+					cout << "new input:" << endl;
 				}
 				else if (number1.signal == false)
 				{
 					cout << number2.sub(number1) << endl;
+					cout << "new input:" << endl;
 				}
 				else
 				{
 					cout << number1.sub(number2) << endl;
+					cout << "new input:" << endl;
 				}
 				break;
 			case '*':
-				cout << number1.time(number2) << endl;
+				if (number1.length <= number2.length)
+				{
+					cout << number2.time(number1) << endl;
+
+				}
+				else
+				{
+					cout << number1.time(number2) << endl;
+				}
+				cout << "new input:" << endl;
 				break;
 			case '/':
 				cout << number1.divide(number2) << endl;
+				cout << "new input:" << endl;
 				break;
 			default:
+				cout << "error" << endl;
+				cout << "new input:" << endl;
 				break;
 			}
 		}
 		else
 		{
-			cin >> temp2;
-			cin >> temp2;
-			cin >> temp;
+			cout << "error" << endl;
+			jump_op
+			jump_op
+			jump_op
+			cout << "new input:" << endl;
 			continue;
 		}
 	}

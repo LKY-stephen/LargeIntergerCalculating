@@ -4,44 +4,64 @@
 using namespace std;
 Interger::Interger(char head)
 {
-	cin >> number;
-	if (head != 0x0)
+	char  temp;
+	if (head == '-')
 	{
-		number = head+number;
-	}
-	if (number[0] == '-'){
-		number = number.substr(1);
+		number = "";
 		signal = false;
 	}
-	else if (number[0] == '+') {
-		number = number.substr(1);
+	else if (head >= '0'&&head <= '9')
+	{
+		number = head;
 		signal = true;
 	}
 	else
 	{
+		number = "";
 		signal = true;
 	}
-	//clear 0
-	for (int i = 0; i < number.size(); i++)
+	
+	while ((temp = getchar()) != '\n')
 	{
-		if (number[i] != '0')
+		if (temp > '9' || temp < '0')
 		{
-			number = number.substr(i, number.size() - i);
-			break;
-		}
-	}
-	length = number.size();
-	for(int i=0;i<length;i++){
-		if (number[i]<'0' || number[i]>'9') {
 			number = "";
 			break;
 		}
+		else if (temp == '0')
+		{
+			if (number == "0")
+			{
+				continue;
+			}
+			else
+			{
+				number+=temp;
+			}
+		}
+		else
+		{
+			if (number == "0")
+			{
+				number = temp;
+			}
+			number += temp;
+		}
 	}
+	length=number.size();
 }
 
 Interger::Interger()
 {
 	__nop;
+}
+
+Interger::Interger(string num)
+{
+	number = num;
+	length = number.size();
+	signal = true;
+
 }
 
 string Interger::add(Interger number2)
@@ -251,10 +271,64 @@ string Interger::sub(Interger number2)
 
 string Interger::time(Interger number2)
 {
-	string tempanswer[9];
+	Interger tempstr[10];
+	for (int i = 0; i < 10; i++)
+	{
+		tempstr[i] = Interger("");
+	}
+	Interger answer=Interger("0");
+	int opr = 0;
 
-	return string();
+	for (int i = 0; i < number2.length; i++)
+	{
+		//calculate every possability
+		opr = number2.number[i] - '0';
+		if (tempstr[opr].number == "")
+		{
+			tempstr[opr]= Interger(time(opr));
+		}
+
+		//add the result
+		answer.time(10);
+		answer=Interger(answer.add(tempstr[opr]));
+	}
+	return (signal^number2.signal?"-":"")+answer.number;
 }
+
+string Interger::time(int y)
+{
+	int carryb=0,leftb, opr, tempb=0;
+	char temp;
+	string answer="";
+	if (y == 0)
+	{
+		return "0";
+	}
+	else if (y == 1)
+	{
+		return number;
+	}
+	else if (y == 10)
+	{
+		if (number != "0")
+		{
+			number += '0';
+			length++;
+		}
+		return number;
+	}
+	for (int i = length-1; i >=0; i--)
+	{
+		opr = number[i] - '0';
+		tempb = opr*y+carryb;
+		leftb = tempb % 10;
+		carryb = (tempb - leftb) / 10;
+		temp = leftb + '0';
+		answer = temp + answer;
+	}
+	return answer;
+}
+
 
 string Interger::divide(Interger number2)
 {
