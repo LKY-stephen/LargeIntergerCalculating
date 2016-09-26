@@ -53,16 +53,9 @@ Interger::Interger(char head)
 
 Interger::Interger()
 {
-	__nop;
+	return;
 }
 
-Interger::Interger(string num)
-{
-	number = num;
-	length = number.size();
-	signal = true;
-
-}
 
 string Interger::add(Interger number2)
 {
@@ -258,7 +251,7 @@ string Interger::sub(Interger number2)
 			answer = number2.number.substr(0, iterator1 + 1) + answer;
 		}
 	}
-	for (int i = 0; i < answer.size(); i++)
+	for (unsigned int i = 0; i < answer.size(); i++)
 	{
 		if (answer[i] != '0')
 		{
@@ -274,23 +267,31 @@ string Interger::time(Interger number2)
 	Interger tempstr[10];
 	for (int i = 0; i < 10; i++)
 	{
-		tempstr[i] = Interger("");
+		tempstr[i].number = "0";
+		tempstr[i].length = 1;
+		tempstr[i].signal = true;
 	}
-	Interger answer=Interger("0");
+	Interger answer;
+	answer.number = "0";
+	answer.length = 1;
+	answer.signal = true;
 	int opr = 0;
 
 	for (int i = 0; i < number2.length; i++)
 	{
 		//calculate every possability
 		opr = number2.number[i] - '0';
-		if (tempstr[opr].number == "")
+		if (tempstr[opr].number == "0")
 		{
-			tempstr[opr]= Interger(time(opr));
+			tempstr[opr].number= time(opr);
+			tempstr[opr].length = tempstr[opr].number.size();
 		}
 
 		//add the result
-		answer.time(10);
-		answer=Interger(answer.add(tempstr[opr]));
+		answer.number += '0';
+		answer.length++;
+		answer.number=answer.add(tempstr[opr]);
+		answer.length = answer.number.size();
 	}
 	return (signal^number2.signal?"-":"")+answer.number;
 }
@@ -306,15 +307,6 @@ string Interger::time(int y)
 	}
 	else if (y == 1)
 	{
-		return number;
-	}
-	else if (y == 10)
-	{
-		if (number != "0")
-		{
-			number += '0';
-			length++;
-		}
 		return number;
 	}
 	for (int i = length-1; i >=0; i--)

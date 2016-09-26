@@ -11,7 +11,6 @@ public:
 	
 	Interger(char head);//init function
 	Interger();
-	Interger(string num);
 
 	string add(Interger number2);//add same signal number2
 	string sub(Interger number2);//minus number2
