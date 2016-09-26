@@ -2,16 +2,33 @@
 #include "largeinterger.h"
 #include<iostream>
 using namespace std;
-Interger::Interger()
+Interger::Interger(char head)
 {
 	cin >> number;
+	if (head != 0x0)
+	{
+		number = head+number;
+	}
 	if (number[0] == '-'){
 		number = number.substr(1);
 		signal = false;
 	}
+	else if (number[0] == '+') {
+		number = number.substr(1);
+		signal = true;
+	}
 	else
 	{
 		signal = true;
+	}
+	//clear 0
+	for (int i = 0; i < number.size(); i++)
+	{
+		if (number[i] != '0')
+		{
+			number = number.substr(i, number.size() - i);
+			break;
+		}
 	}
 	length = number.size();
 	for(int i=0;i<length;i++){
@@ -20,6 +37,11 @@ Interger::Interger()
 			break;
 		}
 	}
+}
+
+Interger::Interger()
+{
+	__nop;
 }
 
 string Interger::add(Interger number2)
@@ -150,6 +172,8 @@ string Interger::sub(Interger number2)
 			answersignal = number[i] > number2.number[i] ? true : false;
 		}
 	}
+
+
 	if (answersignal)
 	{
 		iterator2 = number2.length-1;
@@ -209,7 +233,7 @@ string Interger::sub(Interger number2)
 			iterator1--;
 			iterator2--;
 		}//endwhile
-		if (iterator2 >= 0)
+		if (iterator1 >= 0)
 		{
 			answer = number2.number.substr(0, iterator1 + 1) + answer;
 		}
@@ -227,6 +251,8 @@ string Interger::sub(Interger number2)
 
 string Interger::time(Interger number2)
 {
+	string tempanswer[9];
+
 	return string();
 }
 

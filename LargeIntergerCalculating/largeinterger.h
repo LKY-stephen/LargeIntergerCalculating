@@ -9,7 +9,8 @@ public:
 	int length;//save the length
 	bool signal;//save the signal of the number
 	
-	Interger();//init function
+	Interger(char head);//init function
+	Interger();
 
 	string add(Interger number2);//add same signal number2
 	string sub(Interger number2);//minus number2
