@@ -460,6 +460,9 @@ string Interger::divide(Interger number2)
 		}
 		
 	}
-	
+	if (number == "")
+	{
+		number = "0";
+	}
 	return result.number;
 }
