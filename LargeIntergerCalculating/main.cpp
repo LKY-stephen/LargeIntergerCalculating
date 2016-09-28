@@ -9,8 +9,7 @@ using namespace std;
 
 void main() {
 	//local variable
-	char op;
-	char temp;
+	char op,temp,mark;
 	string temp2;
 	Interger number1;
 	Interger number2;
@@ -110,7 +109,9 @@ void main() {
 				cout << "new input:" << endl;
 				break;
 			case '/':
-				cout << number1.divide(number2) << endl;
+				mark = number1.signal^number2.signal ?  '-':0x0;
+				cout << "the result is:" << mark << number1.divide(number2)<< endl;
+				cout << "the remainder is :" << mark << number1.number << endl;
 				cout << "new input:" << endl;
 				break;
 			default:

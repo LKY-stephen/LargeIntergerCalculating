@@ -281,15 +281,23 @@ string Interger::time(Interger number2)
 	{
 		//calculate every possability
 		opr = number2.number[i] - '0';
-		if (tempstr[opr].number == "0")
+		if (opr == 0)
+		{
+			answer.number += '0';
+			answer.length++;
+			continue;
+		}
+		else if (tempstr[opr].number == "0")
 		{
 			tempstr[opr].number= time(opr);
 			tempstr[opr].length = tempstr[opr].number.size();
 		}
-
 		//add the result
-		answer.number += '0';
-		answer.length++;
+		if (answer.number != "0")
+		{
+			answer.number += '0';
+			answer.length++;
+		}
 		answer.number=answer.add(tempstr[opr]);
 		answer.length = answer.number.size();
 	}
@@ -318,11 +326,140 @@ string Interger::time(int y)
 		temp = leftb + '0';
 		answer = temp + answer;
 	}
+	if (carryb)
+	{
+		temp = carryb + '0';
+		answer = temp + answer;
+	}
 	return answer;
 }
 
 
 string Interger::divide(Interger number2)
 {
-	return string();
+	
+	signal = (signal^number2.signal?false:true);
+	Interger result;
+	result.number = "";
+	result.length = 0;
+	result.signal = signal;
+	Interger tempstr[11];
+	int i, j,k,opr,loss,carry=0;
+	char mark= signal ? 0x0 : '-';
+	
+	
+
+
+	for ( i = 0; i < 11; i++)
+	{
+		tempstr[i].number = "0";
+		tempstr[i].length = 1;
+		tempstr[i].signal = true;
+	}
+	if (number2.length > length)
+	{
+		return "0";
+	}
+	while ( length >= number2.length)
+	{
+		loss = 0;
+		for ( j = 0; j < number2.length&&number[j] == number2.number[j]; j++);
+		if (j == number2.length)// if all the number is equal to number2
+		{
+			number = number.substr(number2.length, length - number2.length);
+			length -= number2.length;
+			i += number2.length - 1;
+			result.number += "1";
+			result.length += number2.length;
+			loss = number2.length - 1;
+		}
+		else 
+		{
+			if ((number[0] < number2.number[0]) || (j > 0 && number[j] < number2.number[j]))
+			{
+				if (result.number != ""&&carry==0)
+				{
+					result.number += "0";
+					result.length++;
+				}
+				opr = ((number[0] - '0') * 10 + (number[1] - '0')) / (number2.number[0] - '0' + 1);
+				carry = 1;
+			}
+			else
+			{
+				opr = (number[0] - '0') / (number2.number[1] - '0' + 1);
+			}
+			
+			//determin the value of result
+			
+			if (tempstr[opr].number == "0")
+			{
+				tempstr[opr].number = number2.time(opr);
+				tempstr[opr].length = tempstr[opr].number.size();
+			}
+			while (opr < 9)
+			{
+				if (tempstr[opr + 1].number == "0")
+				{
+					tempstr[opr + 1].number = number2.time(opr + 1);
+					tempstr[opr + 1].length = tempstr[opr + 1].number.size();
+				}
+				for (k = 0; k < tempstr[opr + 1].length&&number[k] == tempstr[opr + 1].number[k]; k++);
+				if (tempstr[opr].length<number2.length + carry||k == tempstr[opr + 1].length || number[k] > tempstr[opr + 1].number[k]||tempstr[opr].length<number2.length+carry)//
+				{
+					opr++;
+				}
+				else
+				{
+					break;
+				}
+			}
+			
+
+			//minus 
+			tempstr[10].length = number2.length+carry;
+			tempstr[10].number = number.substr(0, tempstr[10].length);
+			number=tempstr[10].sub(tempstr[opr])+ number.substr(tempstr[10].length,length- tempstr[10].length);
+			loss = length-number.size()-1;
+			if (loss> 0 &&carry)
+			{
+				loss--;
+				carry = 0;
+			}
+			else if (loss < 0 && !carry)
+			{
+				loss++;
+				carry = 1;
+			}
+			length = number.size();
+			result.number += '0' + opr;
+
+			//shift the remain
+			
+		}
+		
+		for (k = 0; k < length&&number[k] == '0'; loss++, k++);
+		length -= k;
+		number = number.substr(k, length);
+		//add 0
+		if (length >= number2.length)
+		{
+			for (k = 0; k < loss; k++)
+			{
+				result.number += '0';
+			}
+			result.length += loss;
+		}
+		else
+		{
+			for (k = 0; k < (loss + length) - number2.length+1; k++)
+			{
+				result.number += '0';
+			}
+			result.length += (loss + length) - number2.length;
+		}
+		
+	}
+	
+	return result.number;
 }
