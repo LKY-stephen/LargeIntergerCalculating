@@ -65,7 +65,7 @@ void main() {
 			case '+':
 				if (number1.signal == number2.signal)
 				{
-					cout << number1.add(number2) << endl;
+					cout << (number1.signal?"":"-")<<number1.add(number2).number << endl;
 					cout << "new input:" << endl;
 				}
 				else if (number1.signal == false)
@@ -82,7 +82,7 @@ void main() {
 			case '-':
 				if (number1.signal != number2.signal)
 				{
-					cout << number1.add(number2) << endl;
+					cout << (number1.signal ? "" : "-") << number1.add(number2).number << endl;
 					cout << "new input:" << endl;
 				}
 				else if (number1.signal == false)
@@ -97,18 +97,16 @@ void main() {
 				}
 				break;
 			case '*':
-				if (number1.length <= number2.length)
-				{
-					cout << number2.time(number1) << endl;
-
-				}
-				else
-				{
-					cout << number1.time(number2) << endl;
-				}
+				cout << ((number1.signal^number2.signal) ? "-" : "");
+				cout << (number1.length <= number2.length ? number2.time(number1).number : number1.time(number2).number) << endl;
 				cout << "new input:" << endl;
 				break;
 			case '/':
+				if (number2.number == "0")
+				{
+					cout << "divide 0" << endl;
+					break;
+				}
 				mark = number1.signal^number2.signal ?  '-':0x0;
 				cout << "the result is:" << mark << number1.divide(number2)<< endl;
 				cout << "the remainder is :" << mark << number1.number << endl;

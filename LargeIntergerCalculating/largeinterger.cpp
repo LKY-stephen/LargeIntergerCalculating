@@ -57,11 +57,14 @@ Interger::Interger()
 }
 
 
-string Interger::add(Interger number2)
+Interger Interger::add(Interger number2)
 {
 	char carry=0x0;
 	char temp=0;
-	string answer = "";
+	Interger answer;
+	answer.number = "";
+	answer.signal = signal;
+	answer.length = 0;
 	int iterator1 = length - 1;
 	int iterator2 = number2.length - 1;
 	
@@ -78,7 +81,7 @@ string Interger::add(Interger number2)
 		{
 			carry = 0x0;
 		}
-		answer = temp + answer;
+		answer.number = temp + answer.number;
 		iterator1--;
 		iterator2--;
 	}
@@ -87,18 +90,18 @@ string Interger::add(Interger number2)
 	{   //no carrybit
 	    if (iterator1 >= 0)
 		{
-			answer = number.substr(0, iterator1 + 1) + answer;
+			answer.number = number.substr(0, iterator1 + 1) + answer.number;
 		}
 		else if (iterator2 >= 0)
 		{
-			answer = number2.number.substr(0, iterator2 + 1) + answer;
+			answer.number = number2.number.substr(0, iterator2 + 1) + answer.number;
 		}
 	}
 	else
 	{   //carry bit
 		if (iterator1 >= 0)
 		{//number1 has left
-			int i;
+			size_t i;
 			for (i = iterator1; i >= 0; i--)
 			{
 				if (number[i] != '9')
@@ -110,17 +113,17 @@ string Interger::add(Interger number2)
 			}
 			if (i >= 0)
 			{
-				answer = number.substr(0, iterator1 + 1) + answer;
+				answer.number = number.substr(0, iterator1 + 1) + answer.number;
 			}
 			else
 			{
-				answer='1'+ number.substr(0, iterator1 + 1) + answer;
+				answer.number='1'+ number.substr(0, iterator1 + 1) + answer.number;
 			}
 			
 		}//endif
 		else if (iterator2 >= 0)
 		{
-			int i;
+			size_t i;
 			for (i = iterator2; i >= 0; i--)
 			{
 				if (number2.number[i] != '9')
@@ -132,27 +135,21 @@ string Interger::add(Interger number2)
 			}
 			if (i >= 0)
 			{
-				answer = number2.number.substr(0, iterator2 + 1) + answer;
+				answer.number = number2.number.substr(0, iterator2 + 1) + answer.number;
 			}
 			else
 			{
-				answer = '1' + number2.number.substr(0, iterator2 + 1) + answer;
+				answer.number = '1' + number2.number.substr(0, iterator2 + 1) + answer.number;
 			}
 
 		}//end elseif
 		else
 		{
-			answer = '1' + answer;
+			answer.number = '1' + answer.number;
 		}//end else
 	}
-	if (signal == false)
-	{
-		return '-' + answer;
-	}
-	else
-	{
-		return answer;
-	}
+	answer.length = answer.number.size();
+	return answer;
 }
 
 string Interger::sub(Interger number2)
@@ -195,7 +192,7 @@ string Interger::sub(Interger number2)
 		{
 			if (number[iterator1] < number2.number[iterator2])
 			{
-				for (int j = iterator1-1; j >= 0; j--)
+				for (size_t j = iterator1-1; j >= 0; j--)
 				{
 					if (number[j] > '0')
 					{
@@ -227,7 +224,7 @@ string Interger::sub(Interger number2)
 		{
 			if (number2.number[iterator1] < number[iterator2])
 			{
-				for (int j = iterator1-1; j >= 0; j--)
+				for (size_t j = iterator1-1; j >= 0; j--)
 				{
 					if (number2.number[j] > '0')
 					{
@@ -262,77 +259,75 @@ string Interger::sub(Interger number2)
 	return (answersignal?"":"-")+answer;
 }
 
-string Interger::time(Interger number2)
+Interger Interger::time(Interger number2)
 {
-	Interger tempstr[10];
-	for (int i = 0; i < 10; i++)
+	Interger tempstr[8];//x0,x1,y0,y1,z0,z1,z2,answer
+	size_t middle = length / 2;
+	if (number2.length<2)
+		return singletime(number2.number[0]-'0');
+	tempstr[0].number = number.substr(0, length - middle);
+	tempstr[1].number = number.substr(length-middle);
+	tempstr[2].number= number2.number.substr(0, number2.length - middle);
+	tempstr[3].number =number2.number.substr(number2.length - middle);
+	for (int i = 0; i < 8; i++)
 	{
-		tempstr[i].number = "0";
-		tempstr[i].length = 1;
+		tempstr[i].length = tempstr[i].number.size();
 		tempstr[i].signal = true;
 	}
-	Interger answer;
-	answer.number = "0";
-	answer.length = 1;
-	answer.signal = true;
-	int opr = 0;
-
-	for (int i = 0; i < number2.length; i++)
+	tempstr[6] = tempstr[2].time(tempstr[0]);
+	tempstr[4] = tempstr[3].time(tempstr[1]);
+	tempstr[5] = (tempstr[1].add(tempstr[0])).time(tempstr[3].add(tempstr[2]));
+	tempstr[7].number = tempstr[5].sub(tempstr[4].add(tempstr[6]));
+	for (int i = 0; i < middle; i++)
 	{
-		//calculate every possability
-		opr = number2.number[i] - '0';
-		if (opr == 0)
-		{
-			answer.number += '0';
-			answer.length++;
-			continue;
-		}
-		else if (tempstr[opr].number == "0")
-		{
-			tempstr[opr].number= time(opr);
-			tempstr[opr].length = tempstr[opr].number.size();
-		}
-		//add the result
-		if (answer.number != "0")
-		{
-			answer.number += '0';
-			answer.length++;
-		}
-		answer.number=answer.add(tempstr[opr]);
-		answer.length = answer.number.size();
+		tempstr[6].number += "00";
+		tempstr[7].number += "0";
 	}
-	return (signal^number2.signal?"-":"")+answer.number;
+	tempstr[6].length = tempstr[6].number.size();
+	tempstr[7].length = tempstr[7].number.size();
+	tempstr[7] = tempstr[6].add(tempstr[7]).add(tempstr[4]);
+	return tempstr[7];
+	
 }
 
-string Interger::time(int y)
+Interger Interger::singletime(int y)
 {
-	int carryb=0,leftb, opr, tempb=0;
+	int carryb = 0, leftb, opr, tempb = 0;
 	char temp;
-	string answer="";
+	Interger answer;
+	answer.number = "";
+	answer.length = 0;
+	answer.signal = true;
 	if (y == 0)
 	{
-		return "0";
+		answer.number = "0";
+		answer.length++;
+		return answer;
 	}
 	else if (y == 1)
 	{
-		return number;
+		answer.number = number;
+		answer.length = length;
+		return answer;
 	}
-	for (int i = length-1; i >=0; i--)
+	for (int i = length - 1; i >= 0; i--)
 	{
 		opr = number[i] - '0';
-		tempb = opr*y+carryb;
+		tempb = opr*y + carryb;
 		leftb = tempb % 10;
 		carryb = (tempb - leftb) / 10;
 		temp = leftb + '0';
-		answer = temp + answer;
+		answer.number = temp + answer.number;
 	}
 	if (carryb)
 	{
 		temp = carryb + '0';
-		answer = temp + answer;
+		answer.number = temp + answer.number;
 	}
+	answer.length = answer.number.size();
 	return answer;
 }
+
 
 
 string Interger::divide(Interger number2)
@@ -344,7 +339,7 @@ string Interger::divide(Interger number2)
 	result.length = 0;
 	result.signal = signal;
 	Interger tempstr[11];
-	int i, j,k,opr,loss,carry=0;
+	size_t i, j,k,opr,loss,carry=0;
 	char mark= signal ? 0x0 : '-';
 	
 	
@@ -394,23 +389,22 @@ string Interger::divide(Interger number2)
 			
 			if (tempstr[opr].number == "0")
 			{
-				tempstr[opr].number = number2.time(opr);
-				tempstr[opr].length = tempstr[opr].number.size();
+				tempstr[opr] = number2.time(opr);
 			}
 			while (opr < 9)
 			{
-				if (tempstr[opr + 1].number == "0")
+				if (tempstr[++opr].number == "0")
 				{
-					tempstr[opr + 1].number = number2.time(opr + 1);
-					tempstr[opr + 1].length = tempstr[opr + 1].number.size();
+					tempstr[opr] = number2.time(opr);
 				}
-				for (k = 0; k < tempstr[opr + 1].length&&number[k] == tempstr[opr + 1].number[k]; k++);
-				if (tempstr[opr].length<number2.length + carry||k == tempstr[opr + 1].length || number[k] > tempstr[opr + 1].number[k]||tempstr[opr].length<number2.length+carry)//
+				for (k = 0; k < tempstr[opr].length&&number[k] == tempstr[opr].number[k]; k++);
+				if (tempstr[opr-1].length<number2.length + carry||k == tempstr[opr].length || number[k] > tempstr[opr].number[k]||tempstr[opr-1].length<number2.length+carry)//
 				{
-					opr++;
+					continue;
 				}
 				else
 				{
+					opr--;
 					break;
 				}
 			}
@@ -432,7 +426,7 @@ string Interger::divide(Interger number2)
 				carry = 1;
 			}
 			length = number.size();
-			result.number += '0' + opr;
+			result.number += ('0' + opr);
 
 			//shift the remain
 			
