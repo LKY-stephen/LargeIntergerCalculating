@@ -2,15 +2,26 @@
 #include "largeinterger.h"
 #include <iostream>
 
+
 #define jump_op while (getchar() != '\n');
 
 
 using namespace std;
 
+void printvector(vector<unsigned char> a)
+{
+	vector<unsigned char>::iterator ptra;
+	for (ptra=a.begin(); ptra!=a.end(); ptra++)
+		cout << *ptra;
+	cout << endl;
+}
+
+
+
 void main() {
 	//local variable
 	char op,temp,mark;
-	string temp2;
+	vector<unsigned char> temp2;
 	Interger number1;
 	Interger number2;
 	while ((temp=getchar())!= EOF)
@@ -24,7 +35,7 @@ void main() {
 
 			 number1 = Interger(temp);
 			//input first integer
-			if (number1.number == "")  //if the number is available
+			if (number1.number[0]==0x00)  //if the number is available
 			{
 				cout << "error" << endl;
 				jump_op
@@ -44,7 +55,7 @@ void main() {
 				continue;
 			}
 			number2 = Interger(temp);
-			if (number2.number == "")//if the number is available
+			if (number2.number[0] == 0x00)//if the number is available
 			{
 				cout << "error" << endl;
 				jump_op
@@ -65,51 +76,55 @@ void main() {
 			case '+':
 				if (number1.signal == number2.signal)
 				{
-					cout << (number1.signal?"":"-")<<number1.add(number2).number << endl;
+					cout << (number1.signal ? "" : "-");
+					printvector(number1.add(number2).number);
 					cout << "new input:" << endl;
 				}
 				else if (number1.signal == false)
 				{
-					cout << number2.sub(number1) << endl;
+					printvector(number2.sub(number1));
 					cout << "new input:" << endl;
 				}
 				else
 				{
-					cout << number1.sub(number2) << endl;
+					printvector(number1.sub(number2));
 					cout << "new input:" << endl;
 				}
 				break;
 			case '-':
 				if (number1.signal != number2.signal)
 				{
-					cout << (number1.signal ? "" : "-") << number1.add(number2).number << endl;
+					cout << (number1.signal ? "" : "-");
+					printvector(number1.add(number2).number);
 					cout << "new input:" << endl;
 				}
 				else if (number1.signal == false)
 				{
-					cout << number2.sub(number1) << endl;
+					printvector(number2.sub(number1));
 					cout << "new input:" << endl;
 				}
 				else
 				{
-					cout << number1.sub(number2) << endl;
+					printvector(number1.sub(number2));
 					cout << "new input:" << endl;
 				}
 				break;
 			case '*':
 				cout << ((number1.signal^number2.signal) ? "-" : "");
-				cout << (number1.length <= number2.length ? number2.time(number1).number : number1.time(number2).number) << endl;
+				printvector((number1.length <= number2.length ? number2.time(&number1) : number1.time(&number2)).number );
 				cout << "new input:" << endl;
 				break;
 			case '/':
-				if (number2.number == "0")
+				if (number2.number[0] == '0')
 				{
 					cout << "divide 0" << endl;
 					break;
 				}
 				mark = number1.signal^number2.signal ?  '-':0x0;
-				cout << "the result is:" << mark << number1.divide(number2)<< endl;
-				cout << "the remainder is :" << mark << number1.number << endl;
+				cout << "the result is:" << mark;
+				printvector(number1.divide(number2));
+				cout << "the remainder is :" << mark;
+				printvector(number1.number);
 				cout << "new input:" << endl;
 				break;
 			default:
