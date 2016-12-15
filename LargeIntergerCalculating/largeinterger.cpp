@@ -1,6 +1,7 @@
 #pragma once
 #include "largeinterger.h"
 #include<iostream>
+#include<assert.h>
 using namespace std;
 
 #define adjust(elem) elem->length=elem->number.size();
@@ -117,7 +118,6 @@ Interger Interger::add(Interger number2)
 {
 	char carry=0x0;
 	char temp=0;
-	Interger answer;
 	Interger tempint;
 	bool tempflag = false;
 	if (number2.length > length)
@@ -127,6 +127,8 @@ Interger Interger::add(Interger number2)
 		number2 = *this;
 		*this = tempint;
 	}
+	
+	Interger answer;
 	answer.number.clear();
 	answer.signal = signal;
 	int iterator1 = length - 1;
@@ -134,8 +136,8 @@ Interger Interger::add(Interger number2)
 	//add the small number
 	while (iterator1 >= 0 && iterator2 >= 0)
 	{
-		temp = carry+number[iterator1] + number2.number[iterator2]-'0';
-		if (temp > '9')
+		temp = carry+number[iterator1] + number2.number[iterator2]-'0'-'0';
+		if (temp > 0x09)
 		{
 			carry = 0x1;
 			temp -= 10;
@@ -144,7 +146,7 @@ Interger Interger::add(Interger number2)
 		{
 			carry = 0x0;
 		}
-		answer.number.insert(answer.number.begin(), temp);
+		answer.number.insert(answer.number.begin(), temp+'0');
 		iterator1--;
 		iterator2--;
 	}
@@ -164,54 +166,57 @@ Interger Interger::add(Interger number2)
 	{   //carry bit
 		if (iterator1 >= 0)
 		{//number1 has left
-			size_t i;
+			int i;
 			for (i = iterator1; i >= 0; i--)
 			{
 				if (number[i] != '9')
 				{
-					number[i]++;
+					answer.number.insert(answer.number.begin(),number[i]+1);
 					break;//break for
 				}
-				number[i] = '0';
+				answer.number.insert(answer.number.begin(),'0');
 			}
 			if (i >= 0)
 			{
-				answer.number.insert(answer.number.begin(), number.begin(), number.begin() + iterator1 + 1);
+				answer.number.insert(answer.number.begin(), number.begin(), number.begin() +i);
 			}
 			else
 			{
-				answer.number.insert(answer.number.begin(), number.begin(), number.begin() + iterator1 + 1);
 				answer.number.insert(answer.number.begin(), '1');
 			}
 			
 		}//endif
 		else if (iterator2 >= 0)
 		{
-			size_t i;
+			int i;
 			for (i = iterator2; i >= 0; i--)
 			{
 				if (number2.number[i] != '9')
 				{
-					number2.number[i]++;
+					answer.number.insert(answer.number.begin(), number2.number[i] + 1);
 					break;//break for
 				}
-				number[i] = '0';
+				answer.number.insert(answer.number.begin(), '0');
 			}
-			if (i >= 0)
+			if (i > 0)
 			{
-				answer.number.insert(answer.number.begin(), number2.number.begin(), number2.number.begin() + iterator1 + 1);
+				answer.number.insert(answer.number.begin(), number2.number.begin(), number2.number.begin() + i);
 			}
-			else
+			else if (i < 0)
 			{
-				answer.number.insert(answer.number.begin(), number2.number.begin(), number2.number.begin() + iterator1 + 1);
 				answer.number.insert(answer.number.begin(), '1');
+				
 			}
 
 		}//end elseif
 		else
 		{
-			answer.number.insert(answer.number.begin(),1);
+			answer.number.insert(answer.number.begin(),'1');
 		}//end else
+	}
+	for (int m = 0; m < answer.number.size(); m++)
+	{
+		assert(answer.number[m] >= '0'&&answer.number[m] <= '9');
 	}
 	answer.length = answer.number.size();
 	if (tempflag)
@@ -262,7 +267,7 @@ vector<unsigned char> Interger::sub(Interger number2)
 		{
 			if (number[iterator1] < number2.number[iterator2])
 			{
-				for (size_t j = iterator1-1; j >= 0; j--)
+				for (int j = iterator1-1; j >= 0; j--)
 				{
 					if (number[j] > '0')
 					{
