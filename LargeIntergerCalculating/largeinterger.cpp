@@ -114,29 +114,27 @@ bool  Interger::operator==(const Interger & old)
 }
 
 
-Interger Interger::add(Interger number2)
+void Interger::add(Interger *number2, Interger *answer)
 {
 	char carry=0x0;
 	char temp=0;
 	Interger tempint;
 	bool tempflag = false;
-	if (number2.length > length)
+	if (number2->length > length)
 	{
 		tempflag = true;
-		tempint = number2;
-		number2 = *this;
+		tempint =* number2;
+		*number2 = *this;
 		*this = tempint;
-	}
-	
-	Interger answer;
-	answer.number.clear();
-	answer.signal = signal;
+	} 
+	//exchange number to make sure number1 is bigger than number 2
+	answer->signal = signal;
 	int iterator1 = length - 1;
-	int iterator2 = number2.length - 1;
+	int iterator2 = number2->length - 1;
 	//add the small number
 	while (iterator1 >= 0 && iterator2 >= 0)
 	{
-		temp = carry+number[iterator1] + number2.number[iterator2]-'0'-'0';
+		temp = carry+number[iterator1] + number2->number[iterator2]-'0'-'0';
 		if (temp > 0x09)
 		{
 			carry = 0x1;
@@ -146,7 +144,7 @@ Interger Interger::add(Interger number2)
 		{
 			carry = 0x0;
 		}
-		answer.number.insert(answer.number.begin(), temp+'0');
+		answer->number.insert(answer->number.begin(), temp+'0');
 		iterator1--;
 		iterator2--;
 	}
@@ -155,11 +153,11 @@ Interger Interger::add(Interger number2)
 	{   //no carrybit
 	    if (iterator1 >= 0)
 		{
-			answer.number.insert(answer.number.begin(), number.begin(), number.begin() + iterator1 + 1);
+			answer->number.insert(answer->number.begin(), number.begin(), number.begin() + iterator1 + 1);
 		}
 		else if (iterator2 >= 0)
 		{
-			answer.number.insert(answer.number.begin(), number2.number.begin(), number2.number.begin() + iterator2 + 1);
+			answer->number.insert(answer->number.begin(), number2->number.begin(), number2->number.begin() + iterator2 + 1);
 		}
 	}
 	else
@@ -171,18 +169,18 @@ Interger Interger::add(Interger number2)
 			{
 				if (number[i] != '9')
 				{
-					answer.number.insert(answer.number.begin(),number[i]+1);
+					answer->number.insert(answer->number.begin(),number[i]+1);
 					break;//break for
 				}
-				answer.number.insert(answer.number.begin(),'0');
+				answer->number.insert(answer->number.begin(),'0');
 			}
 			if (i >= 0)
 			{
-				answer.number.insert(answer.number.begin(), number.begin(), number.begin() +i);
+				answer->number.insert(answer->number.begin(), number.begin(), number.begin() +i);
 			}
 			else
 			{
-				answer.number.insert(answer.number.begin(), '1');
+				answer->number.insert(answer->number.begin(), '1');
 			}
 			
 		}//endif
@@ -191,179 +189,271 @@ Interger Interger::add(Interger number2)
 			int i;
 			for (i = iterator2; i >= 0; i--)
 			{
-				if (number2.number[i] != '9')
+				if (number2->number[i] != '9')
 				{
-					answer.number.insert(answer.number.begin(), number2.number[i] + 1);
+					answer->number.insert(answer->number.begin(), number2->number[i] + 1);
 					break;//break for
 				}
-				answer.number.insert(answer.number.begin(), '0');
+				answer->number.insert(answer->number.begin(), '0');
 			}
 			if (i > 0)
 			{
-				answer.number.insert(answer.number.begin(), number2.number.begin(), number2.number.begin() + i);
+				answer->number.insert(answer->number.begin(), number2->number.begin(), number2->number.begin() + i);
 			}
 			else if (i < 0)
 			{
-				answer.number.insert(answer.number.begin(), '1');
+				answer->number.insert(answer->number.begin(), '1');
 				
 			}
 
 		}//end elseif
 		else
 		{
-			answer.number.insert(answer.number.begin(),'1');
+			answer->number.insert(answer->number.begin(),'1');
 		}//end else
 	}
-	for (int m = 0; m < answer.number.size(); m++)
+	for (int m = 0; m < answer->number.size(); m++)
 	{
-		assert(answer.number[m] >= '0'&&answer.number[m] <= '9');
+		assert(answer->number[m] >= '0'&&answer->number[m] <= '9');
 	}
-	answer.length = answer.number.size();
+	answer->length = answer->number.size();
 	if (tempflag)
 	{
-		tempint = number2;
-		number2 = *this;
+		tempint = *number2;
+		*number2 = *this;
 		*this = tempint;
 	}
-	return answer;
 }
 
-vector<unsigned char> Interger::sub(Interger number2)
+void Interger::sub(Interger *number2, Interger *answer)
 {
 	bool answersignal;
-	vector<unsigned char> answer ;
 	char temp = '0';
 	int iterator1;
 	int iterator2;
-
+	int tempup=-1;
+	int temppos = 0;
 	//decide the sgn
-	if (length > number2.length)
+	if (length > number2->length)
 	{
 		answersignal = true;
 	}
-	else if (length < number2.length)
+	else if (length < number2->length)
 	{
 		answersignal = false;
 	}
 	else
 	{
 		int i=0;
-		for (i = 0; i<length&&number[i] == number2.number[i]; i++);
+		for (i = 0; i<length&&number[i] == number2->number[i]; i++);
 		if (i == length)
 		{
-			answer.push_back('0');
-			return answer;
+			answer->number.push_back('0');
+			answersignal = true;
+			return;
 		}
 		else
 		{
-			answersignal = number[i] > number2.number[i] ? true : false;
+			answersignal = number[i] > number2->number[i] ? true : false;
 		}
 	}
 	if (answersignal)
 	{
-		iterator2 = number2.length-1;
-		iterator1 = length-1;
+		iterator2 = number2->length - 1;
+		iterator1 = length - 1;
 		while (iterator2 >= 0)
 		{
-			if (number[iterator1] < number2.number[iterator2])
+			if (temppos > 1)
 			{
-				for (int j = iterator1-1; j >= 0; j--)
+				temp = ('9' - number2->number[iterator2]) + '0';
+				temppos--;
+			}
+			else if (temppos == 1)
+			{
+				temppos--;
+				if (tempup < number2->number[iterator2])
 				{
-					if (number[j] > '0')
+					temp = (tempup - number2->number[iterator2] + 10) + '0';
+					tempup = -1;
+					for (int j = iterator1 - 1; j >= 0; j--)
 					{
-						number[j]--;
-						break;//break for
+						if (number[j] > '0')
+						{
+							tempup = number[j] - 1;
+							temppos++;
+							break;//break for
+						}
+						temppos++;
 					}
-					number[j] = '9';
+
+				}//endif
+				else
+				{
+					temp = (tempup - number2->number[iterator2]) + '0';
+					tempup = -1;
 				}
-				temp= (number[iterator1] - number2.number[iterator2] + 10)+'0';
-			}//endif
+			}
 			else
 			{
-				temp= (number[iterator1] -number2.number[iterator2])+'0';
-			}
-			answer.insert(answer.begin(),temp);
+				if (number[iterator1] < number2->number[iterator2])
+				{
+					for (int j = iterator1 - 1; j >= 0; j--)
+					{
+						if (number[j] > '0')
+						{
+							tempup = number[j] - 1;
+							temppos++;
+							break;//break for
+						}
+						temppos++;
+					}
+					temp = (number[iterator1] - number2->number[iterator2] + 10) + '0';
+				}//endif
+				else
+				{
+					temp = (number[iterator1] - number2->number[iterator2]) + '0';
+				}
+				
+			}//endif-else
+			answer->number.insert(answer->number.begin(), temp);
 			iterator1--;
 			iterator2--;
-		}//endwhile
-		if (iterator1 >= 0)
-		{
-			answer.insert(answer.begin(),number.begin(),number.begin() + iterator1 + 1);
-		}
+			
+		}//end while
+		
+			if (temppos)
+			{
+				for (; temppos > 1; temppos--)
+				{
+					answer->number.insert(answer->number.begin(), '9');
+					iterator1--;
+				}
+				answer->number.insert(answer->number.begin(), tempup);
+				iterator1--;
+				if (iterator1 >= 0)
+				{
+					answer->number.insert(answer->number.begin(), number.begin(), number.begin() + iterator1 + 1);
+				}
+			}
+			
 	}//end answersignal==true
 	else
 	{
-		iterator1 = number2.length - 1;
+		iterator1 = number2->length - 1;
 		iterator2 = length - 1;
 		while (iterator2 >= 0)
 		{
-			if (number2.number[iterator1] < number[iterator2])
+			if (temppos > 1)
 			{
-				for (size_t j = iterator1-1; j >= 0; j--)
-				{
-					if (number2.number[j] > '0')
-					{
-						number2.number[j]--;
-						break;//break for
-					}
-					number2.number[j] = '9';
-				}
-				temp = (number2.number[iterator1] - number[iterator2] + 10 )+ '0';
-			}//endif
-			else
-			{
-				temp = (number2.number[iterator1] - number[iterator2] )+ '0';
+				temppos--;
+				temp = ('9' - number[iterator2]) + '0';
 			}
-			answer.insert(answer.begin(), temp);
+			else if(temppos == 1)
+			{
+				temppos--;
+				if (tempup< number[iterator2])
+				{
+					temp = (tempup - number[iterator2] + 10) + '0';
+					tempup = -1;
+					for (int j = iterator1 - 1; j >= 0; j--)
+					{
+						if (number2->number[j] > '0')
+						{
+							tempup = number2->number[j] - 1;
+							temppos++;
+							break;//break for
+						}
+						temppos++;
+					}
+				
+				}//endif
+				else
+				{
+					temp = (tempup- number[iterator2]) + '0';
+					tempup = -1;
+				}
+			}
+			else 
+			{
+				if (number2->number[iterator1] < number[iterator2])
+				{
+					for (int j = iterator1 - 1; j >= 0; j--)
+					{
+						if (number2->number[j] > '0')
+						{
+							tempup = number2->number[j] - 1;
+							temppos++;
+							break;//break for
+						}
+						temppos++;
+					}
+					temp = (number2->number[iterator1] - number[iterator2] + 10) + '0';
+				}//endif
+				else
+				{
+					temp = (number2->number[iterator1] - number[iterator2]) + '0';
+				}
+				
+			}
+			answer->number.insert(answer->number.begin(), temp);
 			iterator1--;
 			iterator2--;
 		}//endwhile
-		if (iterator1 >= 0)
+		if (temppos)
 		{
-			answer.insert(answer.begin(), number2.number.begin(), number2.number.begin() + iterator1 + 1);
+			for (; temppos > 1; temppos--)
+			{
+				answer->number.insert(answer->number.begin(), '9');
+				iterator1--;
+			}
+			answer->number.insert(answer->number.begin(), tempup );
+			iterator1--;
+			if (iterator1 >= 0)
+			{
+				answer->number.insert(answer->number.begin(), number2->number.begin(), number2->number.begin() + iterator1 + 1);
+			}
 		}
 	}
-	for (unsigned int i = 0; i < answer.size(); i++)
+	for (unsigned int i = 0; i < answer->number.size(); i++)
 	{
-		if (answer[i] != '0')
+		if (answer->number[i] != '0')
 		{
-			answer.erase(answer.begin(), answer.begin()+i);
+			answer->number.erase(answer->number.begin(), answer->number.begin()+i);
 			break;
 		}
 	}
 	if (!answersignal)
 	{
-		answer.insert(answer.begin(), '-');
+		answer->signal=false;
 	}
-	return answer;
 }
 
-Interger Interger::time(Interger* number2)
+void Interger::time(Interger *number2, Interger *answer)
 {
-	Interger tempint;
+	Interger *tempint= new Interger;
 	bool tempflag = false;
 	if (number2->length > length)
 	{
 		tempflag = true;
-		tempint = *number2;
+		*tempint = *number2;
 		*number2 = *this;
-		*this = tempint;
+		*this = *tempint;
 	}
 	if (number2->length==1)
 	{
 		int y = (*(number2->number.begin()) - '0');
-		Interger answer = singletime(y);
+		singletime(y,answer);
 		if (tempflag)
 		{
-			tempint = *number2;
+			*tempint = *number2;
 			*number2 = *this;
-			*this = tempint;
+			*this = *tempint;
 		}
-		return answer;
+		return;
 	}
 	int i = 0, j = 0;
-	Interger *tempstr[8];//x0,x1,y0,y1,z0,z1,z2,answer
-	for (i = 0; i < 8; i++)
+	Interger *tempstr[7];//x0,x1,y0,y1,z0,z1,z2
+	for (i = 0; i < 7; i++)
 	{
 		tempstr[i] = new Interger;
 		tempstr[i]->number.clear();
@@ -402,61 +492,73 @@ Interger Interger::time(Interger* number2)
 		tempstr[i]->length = tempstr[i]->number.size();
 		tempstr[i]->signal = true;
 	}
-	tempstr[6]->number.swap(tempstr[0]->time(tempstr[2]).number);//z2=x0*y0
+	tempstr[6]->number.clear();
+	tempstr[0]->time(tempstr[2], tempstr[6]);//z2=x0*y0
 	adjust(tempstr[6])
-	tempstr[4]->number.swap((tempstr[1]->time(tempstr[3]).number));//z0=x1*y1
+	tempstr[4]->number.clear();
+	tempstr[1]->time(tempstr[3],tempstr[4]);//z0=x1*y1
 	adjust(tempstr[4])
-	tempstr[7]->number.swap(tempstr[3]->add(*tempstr[2]).number);//y1+x1
-	adjust(tempstr[7])
-	tempstr[5]->number.swap((tempstr[1]->add(*tempstr[0])).time(tempstr[7]).number);//z1
+	answer->number.clear();
+	tempstr[3]->add(tempstr[2],answer);//y1+y0
+	adjust(answer)
+	tempint->number.clear();
+	tempstr[1]->add(tempstr[0], tempint);//x1+x0
+	tempstr[5]->number.clear();
+	adjust(tempint)
+	tempint->time(answer, tempstr[5]);//z1
 	adjust(tempstr[5])
-	tempstr[7]->number .swap(tempstr[5]->sub(tempstr[4]->add(*tempstr[6])));//z1-z0-z2
-	adjust(tempstr[7])
+	tempint->number.clear();
+	answer->number.clear();
+	tempstr[4]->add(tempstr[6], tempint);
+	adjust(tempint)
+	tempstr[5]->sub(tempint, answer);//z1-z0-z2
+	adjust(answer)
 	for (int i = 0; i < middle; i++)
 	{
 		tempstr[6]->number.insert(tempstr[6]->number.end(), '0');
-		tempstr[7]->number.insert(tempstr[7]->number.end(), '0');
+		answer->number.insert(answer->number.end(), '0');
 		tempstr[6]->number.insert(tempstr[6]->number.end(), '0');
 	}
 	tempstr[6]->length = tempstr[6]->number.size();
 	killzero(tempstr[6], tempstr[6]->length)
 	adjust(tempstr[6])
-	tempstr[7]->length = tempstr[7]->number.size();
-	killzero(tempstr[7], tempstr[7]->length)
-	adjust(tempstr[7])
-	tempstr[7]->number.swap((((tempstr[6]->add(*tempstr[7]))).add(*tempstr[4])).number);
-	adjust(tempstr[7])
+	killzero(answer, answer->length)
+	adjust(answer)
+	tempint->number.clear();
+	tempstr[6]->add(answer, tempint);
+	answer->number.clear();
+	tempint->add(tempstr[4], answer);
+	adjust(answer)
 	for (i = 0; i < 7; i++)
 	{
 		delete tempstr[i];
 	}
+	delete tempint;
 	if (tempflag)
 	{
-		tempint = *number2;
+		*tempint = *number2;
 		*number2 = *this;
-		*this = tempint;
+		*this = *tempint;
 	}
-	return *tempstr[7];
+	return ;
 	
 }
 
-Interger Interger::singletime(int y)
+void Interger::singletime(int y, Interger *answer)
 {
 	int carryb = 0, leftb, opr, tempb = 0;
 	char temp;
-	Interger answer;
-	answer.number.clear();
 	if (y == 0)
 	{
-		answer.number.push_back('0');
-		answer.length++;
-		return answer;
+		answer->number.push_back('0');
+		answer->length++;
+		return;
 	}
 	else if (y == 1)
 	{
-		answer.number = number;
-		answer.length = length;
-		return answer;
+		answer->number = number;
+		answer->length = length;
+		return;
 	}
 	for (int i = length - 1; i >= 0; i--)
 	{
@@ -465,79 +567,76 @@ Interger Interger::singletime(int y)
 		leftb = tempb % 10;
 		carryb = (tempb - leftb) / 10;
 		temp = leftb + '0';
-		answer.number.insert(answer.number.begin(),temp);
+		answer->number.insert(answer->number.begin(),temp);
 	}
 	if (carryb)
 	{
 		temp = carryb + '0';
-		answer.number.insert(answer.number.begin(), temp);
+		answer->number.insert(answer->number.begin(), temp);
 	}
-	answer.length = answer.number.size();
-	return answer;
+	answer->length = answer->number.size();
 }
 
 
 
-vector<unsigned char> Interger::divide(Interger number2)
+void Interger::divide(Interger *number2, Interger *answer)
 {
 	
-	signal = (signal^number2.signal?false:true);
-	Interger result;
-	result.signal = signal;
+	signal = (signal^number2->signal?false:true);
+	answer->signal = signal;
 	Interger tempstr[11];
-	vector<unsigned char> *tempvec;
+	Interger *tempvec=new Interger;
 	int j,k,opr,loss,carry=0;
 	char mark= signal ? 0x0 : '-';
 	
 	
-	if (number2.length > length)
+	if (number2->length > length)
 	{
-		result.number[0] = '0';
-		return result.number;
+		answer->number[0] = '0';
 	}
-	while ( length >= number2.length)
+	while ( length >= number2->length)
 	{
 		loss = 0;
-		for ( j = 0; j < number2.length&&number[j] == number2.number[j]; j++);
-		if (j == number2.length)// if all the number is equal to number2
+		for ( j = 0; j < number2->length&&number[j] == number2->number[j]; j++);
+		if (j == number2->length)// if all the number is equal to number2
 		{
-			number.erase(number.begin(), number.begin()+number2.length);
-			length -= number2.length;
-			result.number.push_back('1');
-			result.length += number2.length;
-			loss = number2.length - 1;
+			number.erase(number.begin(), number.begin()+number2->length);
+			length -= number2->length;
+			answer->number.push_back('1');
+			answer->length += number2->length;
+			loss = number2->length - 1;
 		}
 		else 
 		{
-			if ((number[0] < number2.number[0]) || (j > 0 && number[j] < number2.number[j]))
+			if ((number[0] < number2->number[0]) || (j > 0 && number[j] < number2->number[j]))
 			{
-				if (result.number[0] != 0x0&&carry==0)
+				if (answer->number[0] != 0x0&&carry==0)
 				{
-					result.number.push_back('0');
-					result.length++;
+					answer->number.push_back('0');
+					answer->length++;
 				}
-				opr = ((number[0] - '0') * 10 + (number[1] - '0')) / (number2.number[0] - '0' + 1);
+				opr = ((number[0] - '0') * 10 + (number[1] - '0')) / (number2->number[0] - '0' + 1);
 				carry = 1;
 			}
 			else
 			{
-				opr = (number[0] - '0') / (number2.number[1] - '0' + 1);
+				opr = (number[0] - '0') / (number2->number[1] - '0' + 1);
 			}
 			
 			//determin the value of result
 			
 			if (tempstr[opr].number[0]=='0')
 			{
-				tempstr[opr] = number2.singletime(opr);
+				number2->singletime(opr, &tempstr[opr]);
 			}
 			while (opr < 9)
 			{
 				if (tempstr[++opr].number[0] == '0')
 				{
-					tempstr[opr] = number2.singletime(opr);
+					number2->singletime(opr, &tempstr[opr]);
 				}
 				for (k = 0; k < tempstr[opr].length&&number[k] == tempstr[opr].number[k]; k++);
-				if (tempstr[opr-1].length<number2.length + carry||k == tempstr[opr].length || number[k] > tempstr[opr].number[k]||tempstr[opr-1].length<number2.length+carry)//
+				if (tempstr[opr-1].length<number2->length + carry||k == tempstr[opr].length || number[k] > tempstr[opr].number[k]||tempstr[opr-1].length<number2->length+carry)//
 				{
 					continue;
 				}
@@ -550,12 +649,12 @@ vector<unsigned char> Interger::divide(Interger number2)
 			
 
 			//minus 
-			tempstr[10].length = number2.length+carry;
+			tempstr[10].length = number2->length+carry;
 			tempstr[10].number.clear();
 			tempstr[10].number .insert(tempstr[10].number.begin(),number.begin(),number.begin()+tempstr[10].length);
 			number.clear();
-			tempvec=&tempstr[10].sub(tempstr[opr]);
-			number.insert(number.end(), tempvec->begin(), tempvec->end());
+			tempstr[10].sub(&tempstr[opr],tempvec);
+			number.insert(number.end(), tempvec->number.begin(), tempvec->number.end());
 		    number.insert(number.end(),number.begin()+tempstr[10].length,number.end());
 			loss = length-number.size()-1;
 			if (loss> 0 &&carry)
@@ -569,7 +668,7 @@ vector<unsigned char> Interger::divide(Interger number2)
 				carry = 1;
 			}
 			length = number.size();
-			result.number .push_back ('0' + opr);
+			answer->number .push_back ('0' + opr);
 
 			//shift the remain
 			
@@ -579,21 +678,21 @@ vector<unsigned char> Interger::divide(Interger number2)
 		length -= k;
 		number.erase(number.begin(),number.begin()+k);
 		//add 0
-		if (length >= number2.length)
+		if (length >= number2->length)
 		{
 			for (k = 0; k < loss; k++)
 			{
-				result.number.push_back('0');
+				answer->number.push_back('0');
 			}
-			result.length += loss;
+			answer->length += loss;
 		}
 		else
 		{
-			for (k = 0; k < (loss + length) - number2.length+1; k++)
+			for (k = 0; k < (loss + length) - number2->length+1; k++)
 			{
-				result.number .push_back( '0');
+				answer->number .push_back( '0');
 			}
-			result.length += (loss + length) - number2.length;
+			answer->length += (loss + length) - number2->length;
 		}
 		
 	}
@@ -601,5 +700,5 @@ vector<unsigned char> Interger::divide(Interger number2)
 	{
 		number[0]='0';
 	}
-	return result.number;
+	delete tempvec;
 }

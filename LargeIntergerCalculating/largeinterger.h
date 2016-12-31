@@ -15,10 +15,10 @@ public:
 	Interger& operator =(const Interger& old);
 	bool operator ==(const Interger& old);
 
-	Interger add(Interger number2);//add same signal number2
-	vector<unsigned char> sub(Interger number2);//minus number2
-	Interger time(Interger* number2);//time number2
-	Interger singletime(int y);
-	vector<unsigned char> divide(Interger number2);//divided by number2
+	void add(Interger *number2, Interger *answer);//add same signal number2
+	void sub(Interger *number2, Interger *answer);//minus number2
+	void time(Interger *number2, Interger *answer);//time number2
+	void singletime(int y, Interger *answer);
+	void divide(Interger *number2, Interger *answer);//divided by number2
 
 };
